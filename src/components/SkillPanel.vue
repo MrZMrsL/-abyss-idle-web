@@ -1,56 +1,106 @@
 <template>
-  <div class="space-y-3">
-    <!-- 技能点 -->
-    <div class="card p-3 flex items-center justify-between">
-      <span class="text-sm text-[var(--text2)]">🧠 可用技能点</span>
-      <span class="text-2xl font-bold text-[var(--accent2)]">{{ skillPoints }}</span>
+  <div class="space-y-6 animate-fade-in pb-4">
+    <!-- ===== Skill Points Header ===== -->
+    <div class="card p-5 flex items-center justify-center gap-3">
+      <span class="text-3xl">💎</span>
+      <div class="text-center">
+        <div class="text-xs text-[var(--text2)]">可用技能点</div>
+        <div class="text-2xl font-bold text-[var(--accent)]">{{ skillPoints }}</div>
+      </div>
     </div>
 
-    <!-- 技能列表 -->
-    <div class="card p-3">
-      <h3 class="text-xs font-bold text-[var(--accent)] mb-3">📖 技能树</h3>
-      <div class="space-y-2 max-h-[60vh] overflow-y-auto">
+    <!-- ===== Learned Skills ===== -->
+    <div v-if="learnedList.length > 0" class="card p-5">
+      <h3 class="text-[var(--accent)] font-bold mb-3 flex items-center gap-1.5 text-base">
+        ✅ 已学技能 ({{ learnedList.length }})
+      </h3>
+      <div class="grid grid-cols-1 gap-3">
         <div
-          v-for="(skill, key) in skillTree"
+          v-for="{ skill, key } in learnedList"
           :key="key"
-          class="rounded-lg p-3 border transition-all"
-          :class="learned(key) 
-            ? 'border-[var(--accent)]/50 bg-[var(--accent)]/5' 
-            : 'border-[var(--border)] bg-white/[0.03]'"
+          class="rounded-xl p-4 border-2 card-press"
+          :class="getSkillBranchColor(key)"
         >
-          <div class="flex justify-between items-start gap-2">
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 mb-1">
-                <span class="text-lg">{{ skillIcon(skill.effect) }}</span>
-                <span class="font-bold text-sm" :class="learned(key) ? 'text-[var(--accent)]' : 'text-[var(--text)]'">
-                  {{ skill.name }}
-                </span>
-                <span v-if="learned(key)" class="text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--accent)]/20 text-[var(--accent)] font-bold">
-                  ✅ 已学
-                </span>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2 min-w-0">
+              <span class="text-lg">{{ branchIcon(key) }}</span>
+              <div class="min-w-0">
+                <div class="font-bold text-base truncate">{{ skill.name }}</div>
+                <div class="text-xs text-[var(--text2)]">{{ skill.desc }}</div>
               </div>
-              <div class="text-xs text-[var(--text2)] mb-1">{{ skill.desc }}</div>
-              <div class="text-[10px] text-[var(--text3)]">
-                <span>消耗: {{ skill.cost }}点</span>
-                <span v-if="skill.requires.length" class="ml-2">
-                  前置: {{ skill.requires.map(k => skillTree[k]?.name).join(', ') }}
-                </span>
+            </div>
+            <span class="text-xs font-bold text-[var(--accent)] shrink-0 ml-2">✅ 已学</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Available Skills ===== -->
+    <div v-if="availableList.length > 0" class="card p-5">
+      <h3 class="text-[var(--success)] font-bold mb-3 flex items-center gap-1.5 text-base">
+        📖 可学习 ({{ availableList.length }})
+      </h3>
+      <div class="grid grid-cols-1 gap-3">
+        <div
+          v-for="{ skill, key } in availableList"
+          :key="key"
+          class="rounded-xl p-4 border border-[var(--border)] bg-white/[0.03] card-press"
+        >
+          <div class="flex items-start justify-between gap-2">
+            <div class="flex items-center gap-2 min-w-0 flex-1">
+              <span class="text-lg">{{ branchIcon(key) }}</span>
+              <div class="min-w-0 flex-1">
+                <div class="font-bold text-base truncate">{{ skill.name }}</div>
+                <div class="text-xs text-[var(--text2)]">{{ skill.desc }}</div>
+                <div class="text-xs text-[var(--accent)] mt-0.5">
+                  💎 消耗 {{ skill.cost }} 技能点
+                  <span v-if="skill.requires.length">
+                    | 前置：{{ skill.requires.map(r => skillTree[r]?.name).join(', ') }}
+                  </span>
+                </div>
               </div>
             </div>
             <button
-              v-if="!learned(key)"
-              class="px-3 py-1.5 rounded-lg text-xs font-bold shrink-0 transition-all"
-              :class="canLearn(key) 
-                ? 'bg-gradient-to-r from-[var(--accent)] to-[var(--accent2)] text-[var(--bg)] active:scale-95' 
-                : 'bg-white/5 text-[var(--text3)] cursor-not-allowed'"
-              :disabled="!canLearn(key)"
+              class="btn-primary text-xs py-2 px-3 min-h-[36px] shrink-0"
               @click="store.learnSkill(key)"
             >
-              {{ canLearn(key) ? '学习' : '未解锁' }}
+              学习
             </button>
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- ===== Locked Skills ===== -->
+    <div v-if="lockedList.length > 0" class="card p-5">
+      <h3 class="text-[var(--text3)] font-bold mb-3 flex items-center gap-1.5 text-base">
+        🔒 未解锁 ({{ lockedList.length }})
+      </h3>
+      <div class="grid grid-cols-1 gap-3">
+        <div
+          v-for="{ skill, key, reason } in lockedList"
+          :key="key"
+          class="rounded-xl p-4 border border-[var(--border)] bg-white/[0.02] opacity-60"
+        >
+          <div class="flex items-center gap-2 min-w-0">
+            <span class="text-lg grayscale">{{ branchIcon(key) }}</span>
+            <div class="min-w-0 flex-1">
+              <div class="font-bold text-base truncate text-[var(--text3)]">{{ skill.name }}</div>
+              <div class="text-xs text-[var(--text3)]">{{ skill.desc }}</div>
+              <div class="text-xs text-[var(--danger)] mt-0.5">
+                {{ reason }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== Empty State ===== -->
+    <div v-if="learnedList.length === 0 && availableList.length === 0" class="card p-6 text-center">
+      <div class="text-4xl mb-3">📖</div>
+      <div class="text-base text-[var(--text2)]">暂无可用技能</div>
+      <div class="text-xs text-[var(--text3)] mt-1">升级可获得技能点</div>
     </div>
   </div>
 </template>
@@ -77,15 +127,56 @@ function canLearn(key) {
   return true
 }
 
-function skillIcon(effect) {
-  if (effect.damage_bonus) return '⚔️'
-  if (effect.hp_bonus || effect.max_hp) return '❤️'
-  if (effect.armor) return '🛡️'
-  if (effect.crit_rate) return '💥'
-  if (effect.lifesteal) return '🩸'
-  if (effect.exp_bonus) return '⭐'
-  if (effect.gold_bonus) return '💰'
-  if (effect.mp_bonus || effect.max_mp) return '🔵'
+function getLockReason(key) {
+  const skill = skillTree[key]
+  if (skillPoints.value < skill.cost) {
+    return `技能点不足（需 ${skill.cost} 点）`
+  }
+  if (skill.requires.some((r) => !learned(r))) {
+    const missing = skill.requires.filter((r) => !learned(r)).map((r) => skillTree[r]?.name)
+    return `前置技能未学习：${missing.join(', ')}`
+  }
+  return ''
+}
+
+// ===== Skill Lists =====
+const learnedList = computed(() => {
+  return Object.entries(skillTree)
+    .filter(([, , key]) => learned(key))
+    .map(([key, skill]) => ({ key, skill }))
+})
+
+const availableList = computed(() => {
+  return Object.entries(skillTree)
+    .filter(([key]) => canLearn(key))
+    .map(([key, skill]) => ({ key, skill }))
+})
+
+const lockedList = computed(() => {
+  return Object.entries(skillTree)
+    .filter(([key]) => !learned(key) && !canLearn(key))
+    .map(([key, skill]) => ({ key, skill, reason: getLockReason(key) }))
+})
+
+// ===== Branch Icons & Colors =====
+function branchIcon(key) {
+  if (key.startsWith('str')) return '💪'
+  if (key.startsWith('vit')) return '❤️'
+  if (key.startsWith('agi')) return '⚡'
+  if (key.startsWith('int') || key === 'exp_boost') return '🧠'
+  if (key === 'gold_boost') return '💰'
+  if (key === 'berserk') return '😤'
+  if (key === 'iron_skin') return '🛡️'
+  if (key === 'crit_master') return '🎯'
+  if (key === 'lifesteal') return '🧛'
   return '📖'
+}
+
+function getSkillBranchColor(key) {
+  if (key.startsWith('str')) return 'border-amber-700/60 bg-amber-950/20'
+  if (key.startsWith('vit')) return 'border-emerald-700/60 bg-emerald-950/20'
+  if (key.startsWith('agi')) return 'border-cyan-700/60 bg-cyan-950/20'
+  if (key.startsWith('int') || key === 'exp_boost') return 'border-indigo-700/60 bg-indigo-950/20'
+  return 'border-[var(--accent)]/40 bg-[var(--accent)]/10'
 }
 </script>

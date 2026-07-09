@@ -1,23 +1,18 @@
 <template>
   <nav
-    class="shrink-0 z-30 border-t border-[var(--border)]"
-    style="background: rgba(26,26,46,0.95); backdrop-filter: blur(10px); padding-bottom: env(safe-area-inset-bottom, 0);"
+    class="shrink-0 w-full border-t z-30"
+    style="background: rgba(13, 13, 26, 0.85); border-color: var(--border); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); min-height: 56px;"
   >
-    <div class="flex justify-around items-center max-w-[520px] mx-auto">
+    <div class="flex items-center justify-around h-full py-2">
       <button
-        v-for="tab in tabs"
-        :key="tab.key"
-        class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1.5 min-h-[52px] transition-colors relative"
-        :class="store.activeTab === tab.key ? 'text-[var(--accent)]' : 'text-[var(--text3)] hover:text-[var(--text2)]'"
-        @click="store.setActiveTab(tab.key)"
+        v-for="item in tabs"
+        :key="item.key"
+        class="flex flex-col items-center justify-center gap-0.5 px-2 py-1 rounded-lg transition-all"
+        :class="store.activeTab === item.key ? 'text-[var(--accent)]' : 'text-[var(--text3)]'"
+        @click="store.setActiveTab(item.key)"
       >
-        <span class="text-xl leading-none">{{ tab.icon }}</span>
-        <span class="text-[10px] leading-none mt-0.5">{{ tab.label }}</span>
-        <!-- 激活指示器 -->
-        <div
-          v-if="store.activeTab === tab.key"
-          class="absolute bottom-1 left-1/2 -translate-x-1/2 w-5 h-[2px] rounded-full bg-[var(--accent)]"
-        />
+        <span class="text-xl">{{ item.icon }}</span>
+        <span class="text-xs font-medium">{{ item.label }}</span>
       </button>
     </div>
   </nav>
@@ -29,12 +24,12 @@ import { useGameStore } from '../stores/gameStore.js'
 const store = useGameStore()
 
 const tabs = [
-  { key: 'battle', label: '战斗', icon: '⚔️' },
-  { key: 'inventory', label: '背包', icon: '🎒' },
-  { key: 'pets', label: '宠物', icon: '🐾' },
-  { key: 'skills', label: '技能', icon: '📖' },
-  { key: 'shop', label: '商店', icon: '🏪' },
-  { key: 'achievements', label: '成就', icon: '🏆' },
-  { key: 'settings', label: '设置', icon: '⚙️' },
+  { key: 'battle', icon: '⚔️', label: '战斗' },
+  { key: 'inventory', icon: '🎒', label: '背包' },
+  { key: 'pets', icon: '🐾', label: '宠物' },
+  { key: 'skills', icon: '💎', label: '技能' },
+  { key: 'shop', icon: '🏪', label: '商店' },
+  { key: 'achievements', icon: '🏆', label: '成就' },
+  { key: 'settings', icon: '⚙️', label: '设置' },
 ]
 </script>
