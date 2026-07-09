@@ -1,0 +1,118 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #1a1a2e;
+  --card: #16213e;
+  --card2: #0f3460;
+  --text: #e0e0e0;
+  --text2: #a0a0a0;
+  --accent: #d4a853;
+  --accent2: #f4d03f;
+  --danger: #c0392b;
+  --info: #3498db;
+  --success: #27ae60;
+  --border: rgba(255, 255, 255, 0.1);
+  --common: #a0a0a0;
+  --magic: #2ecc71;
+  --rare: #3498db;
+  --epic: #9b59b6;
+  --legend: #e67e22;
+  --mythic: #e74c3c;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html, body, #app {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #0f0c29 100%);
+  font-family: 'Microsoft YaHei', 'PingFang SC', 'Segoe UI', sans-serif;
+  color: var(--text);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#app {
+  width: 100%;
+  max-width: 520px;
+  height: 100%;
+  max-height: 900px;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  #app {
+    height: 90vh;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 168, 83, 0.4); }
+  50% { box-shadow: 0 0 20px 5px rgba(212, 168, 83, 0.2); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+@keyframes slideDown {
+  from { transform: translate(-50%, -30px); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-shake {
+  animation: shake 0.3s ease-in-out;
+}

@@ -1,0 +1,16 @@
+export const SKILL_TREE = {
+  str_boost_1: { name: '力量觉醒 I', desc: '力量+5', cost: 1, effect: { str: 5 }, requires: [] },
+  str_boost_2: { name: '力量觉醒 II', desc: '力量+8', cost: 2, effect: { str: 8 }, requires: ['str_boost_1'] },
+  str_boost_3: { name: '力量觉醒 III', desc: '力量+12', cost: 3, effect: { str: 12 }, requires: ['str_boost_2'] },
+  vit_boost_1: { name: '坚韧 I', desc: '体质+5', cost: 1, effect: { vit: 5 }, requires: [] },
+  vit_boost_2: { name: '坚韧 II', desc: '体质+8, 护甲+10', cost: 2, effect: { vit: 8 }, requires: ['vit_boost_1'] },
+  agi_boost_1: { name: '敏捷 I', desc: '敏捷+5, 暴击+3%', cost: 1, effect: { agi: 5 }, requires: [] },
+  agi_boost_2: { name: '敏捷 II', desc: '敏捷+8, 暴击+5%', cost: 2, effect: { agi: 8 }, requires: ['agi_boost_1'] },
+  int_boost_1: { name: '智慧 I', desc: '智力+5, 蓝量+30', cost: 1, effect: { int: 5 }, requires: [] },
+  berserk: { name: '狂战士', desc: '攻击+20%, 但护甲-10', cost: 3, effect: { damage_mult: 1.2, armor_penalty: 10 }, requires: ['str_boost_2'] },
+  iron_skin: { name: '铁皮', desc: '护甲+25', cost: 3, effect: { armor_flat: 25 }, requires: ['vit_boost_2'] },
+  crit_master: { name: '致命一击', desc: '暴击率+10%, 暴击伤害+25%', cost: 3, effect: { crit_rate: 10, crit_dmg: 0.25 }, requires: ['agi_boost_2'] },
+  exp_boost: { name: '学者', desc: '经验获取+20%', cost: 2, effect: { exp_bonus: 20 }, requires: ['int_boost_1'] },
+  gold_boost: { name: '贪婪', desc: '金币获取+25%', cost: 2, effect: { gold_bonus: 25 }, requires: [] },
+  lifesteal: { name: '吸血', desc: '攻击时恢复造成伤害的5%', cost: 3, effect: { lifesteal: 5 }, requires: ['berserk'] },
+}
