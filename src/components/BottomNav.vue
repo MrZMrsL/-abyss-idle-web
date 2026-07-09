@@ -1,15 +1,25 @@
 <template>
-  <nav class="bg-[var(--card)] border-t border-[var(--border)] flex justify-around items-center py-2 px-1 shrink-0 z-20">
-    <button
-      v-for="tab in tabs"
-      :key="tab.key"
-      class="flex flex-col items-center gap-1 px-2 py-1 rounded-lg transition-colors"
-      :class="store.activeTab === tab.key ? 'text-[var(--accent)]' : 'text-[var(--text2)]'"
-      @click="store.setActiveTab(tab.key)"
-    >
-      <span class="text-xl">{{ tab.icon }}</span>
-      <span class="text-[10px]">{{ tab.label }}</span>
-    </button>
+  <nav
+    class="shrink-0 z-30 border-t border-[var(--border)]"
+    style="background: rgba(26,26,46,0.95); backdrop-filter: blur(10px); padding-bottom: env(safe-area-inset-bottom, 0);"
+  >
+    <div class="flex justify-around items-center max-w-[520px] mx-auto">
+      <button
+        v-for="tab in tabs"
+        :key="tab.key"
+        class="flex flex-col items-center justify-center gap-0.5 flex-1 py-1.5 min-h-[52px] transition-colors relative"
+        :class="store.activeTab === tab.key ? 'text-[var(--accent)]' : 'text-[var(--text3)] hover:text-[var(--text2)]'"
+        @click="store.setActiveTab(tab.key)"
+      >
+        <span class="text-xl leading-none">{{ tab.icon }}</span>
+        <span class="text-[10px] leading-none mt-0.5">{{ tab.label }}</span>
+        <!-- 激活指示器 -->
+        <div
+          v-if="store.activeTab === tab.key"
+          class="absolute bottom-1 left-1/2 -translate-x-1/2 w-5 h-[2px] rounded-full bg-[var(--accent)]"
+        />
+      </button>
+    </div>
   </nav>
 </template>
 
