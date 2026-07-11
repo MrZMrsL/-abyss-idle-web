@@ -9,6 +9,14 @@ db.version(1).stores({
 
 const SAVE_KEY = 'abyss_idle_save'
 
+function hasLocalStorage() {
+  try {
+    return typeof localStorage !== 'undefined' && localStorage !== null
+  } catch (e) {
+    return false
+  }
+}
+
 export async function loadSave() {
   try {
     const row = await db.settings.get(SAVE_KEY)
@@ -20,6 +28,10 @@ export async function loadSave() {
   }
 
   // Fallback to localStorage
+  if (!hasLocalStorage()) {
+    return null
+  }
+
   try {
     const raw = localStorage.getItem(SAVE_KEY)
     if (raw) {
@@ -37,6 +49,10 @@ export async function saveSave(data) {
     await db.settings.put(payload)
   } catch (e) {
     console.warn('IndexedDB save failed, falling back to localStorage', e)
+    if (!hasLocalStorage()) {
+      console.error('No storage available, save skipped')
+      return
+    }
     try {
       localStorage.setItem(SAVE_KEY, JSON.stringify(data))
     } catch (err) {

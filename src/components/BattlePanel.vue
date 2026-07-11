@@ -79,9 +79,14 @@
     </div>
 
     <!-- Battle Report -->
-    <div v-if="store.lastReport" class="bg-[var(--card)] rounded-xl p-4 border border-[var(--border)]">
+    <div class="bg-[var(--card)] rounded-xl p-4 border border-[var(--border)]">
       <h3 class="text-[var(--accent)] font-bold mb-2">📜 战斗报告</h3>
-      <pre class="whitespace-pre-wrap text-sm text-[var(--text)] leading-relaxed">{{ store.lastReport }}</pre>
+      <pre v-if="store.lastReport" class="whitespace-pre-wrap text-sm text-[var(--text)] leading-relaxed">{{ store.lastReport }}</pre>
+      <div v-else class="text-center py-6 text-[var(--text2)] text-sm">
+        <div class="text-2xl mb-2">🌑</div>
+        <div>暂无战斗记录</div>
+        <div class="text-xs mt-1 opacity-70">点击上方“立即战斗”开始第一场冒险</div>
+      </div>
     </div>
   </div>
 </template>
