@@ -1,79 +1,72 @@
 <template>
-  <div class="h-full w-full relative">
-    <!-- Loading overlay -->
-    <div
-      v-if="loading"
-      class="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[var(--bg)]"
-    >
-      <div class="text-4xl animate-spin mb-4">⚔️</div>
-      <div class="text-[var(--text2)] text-sm">正在加载冒险数据...</div>
+  <!-- Loading State -->
+  <div v-if="loading" class="h-full w-full flex flex-col items-center justify-center gap-4">
+    <div class="text-6xl animate-pulse">🏰</div>
+    <div class="text-lg text-[var(--accent)] font-bold">正在进入深渊...</div>
+    <div class="w-48 h-2 bg-white/10 rounded-full overflow-hidden">
+      <div class="h-full bg-[var(--accent)] rounded-full animate-pulse" style="width: 60%"></div>
     </div>
+  </div>
 
-    <!-- Init error -->
-    <div
-      v-else-if="initError"
-      class="h-full w-full flex flex-col items-center justify-center p-6 text-center"
-    >
-      <div class="text-4xl mb-4">⚠️</div>
-      <h2 class="text-lg font-bold text-[var(--danger)] mb-2">加载失败</h2>
-      <p class="text-[var(--text2)] text-sm mb-4">{{ initError }}</p>
-      <button
-        class="px-6 py-2 rounded-lg bg-[var(--accent)] text-[var(--bg)] font-bold"
-        @click="retryInit"
-      >
-        重试
-      </button>
-    </div>
+  <!-- Init Error -->
+  <div v-else-if="initError" class="h-full w-full flex flex-col items-center justify-center p-6 text-center gap-4">
+    <div class="text-5xl">⚠️</div>
+    <h2 class="text-lg font-bold text-[var(--danger)]">加载失败</h2>
+    <p class="text-sm text-[var(--text2)]">{{ initError }}</p>
+    <button class="btn-primary" @click="retryInit">重试</button>
+  </div>
 
-    <!-- Title screen -->
-    <div v-else-if="!started" class="h-full w-full">
-      <TitleScreen @start="started = true" />
-    </div>
+  <!-- Title Screen -->
+  <div v-else-if="!started" class="h-full w-full">
+    <TitleScreen @start="started = true" />
+  </div>
 
-    <!-- Main game -->
-    <div v-else class="flex flex-col h-full w-full">
-      <StatusBar />
-      <main class="flex-1 overflow-y-auto p-3 pb-20">
-        <BattlePanel v-if="store.activeTab === 'battle'" />
-        <InventoryPanel v-else-if="store.activeTab === 'inventory'" />
-        <PetPanel v-else-if="store.activeTab === 'pets'" />
-        <SkillPanel v-else-if="store.activeTab === 'skills'" />
-        <ShopPanel v-else-if="store.activeTab === 'shop'" />
-        <AchievementPanel v-else-if="store.activeTab === 'achievements'" />
-        <SettingsPanel v-else-if="store.activeTab === 'settings'" />
-      </main>
-      <BottomNav />
+  <!-- Main Game UI -->
+  <div v-else class="flex flex-col h-full w-full">
+    <!-- Status Bar (always visible) -->
+    <StatusBar />
 
-      <!-- Offline Report Modal -->
-      <div
-        v-if="store.pendingOffline"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
-      >
-        <div class="bg-[var(--card)] rounded-xl p-5 max-w-sm w-full border border-[var(--border)] animate-fade-in">
-          <h3 class="text-lg font-bold text-[var(--accent)] mb-3">📥 离线收益</h3>
-          <pre class="whitespace-pre-wrap text-sm text-[var(--text)] max-h-[60vh] overflow-y-auto leading-relaxed">{{ store.pendingOffline }}</pre>
-          <button
-            class="mt-4 w-full py-2 rounded-lg bg-[var(--accent)] text-[var(--bg)] font-bold"
-            @click="store.dismissOffline"
-          >
-            领取
-          </button>
+    <!-- Main Content Area -->
+    <main class="flex-1 overflow-y-auto p-4 pb-20">
+      <BattlePanel v-if="store.activeTab === 'battle'" />
+      <InventoryPanel v-else-if="store.activeTab === 'inventory'" />
+      <PetPanel v-else-if="store.activeTab === 'pets'" />
+      <SkillPanel v-else-if="store.activeTab === 'skills'" />
+      <ShopPanel v-else-if="store.activeTab === 'shop'" />
+      <AchievementPanel v-else-if="store.activeTab === 'achievements'" />
+      <SettingsPanel v-else-if="store.activeTab === 'settings'" />
+    </main>
+
+    <!-- Bottom Navigation -->
+    <BottomNav />
+
+    <!-- Offline Earnings Modal -->
+    <div v-if="store.pendingOffline" class="modal-overlay" @click.self="store.dismissOffline">
+      <div class="modal-content">
+        <div class="flex items-center gap-2 mb-4">
+          <span class="text-2xl">📥</span>
+          <h3 class="text-lg font-bold text-[var(--accent)]">离线收益</h3>
         </div>
+        <pre class="whitespace-pre-wrap text-sm text-[var(--text)] leading-relaxed max-h-[50vh] overflow-y-auto">{{ store.pendingOffline }}</pre>
+        <button class="btn-primary w-full mt-5" @click="store.dismissOffline">
+          ✨ 领取收益
+        </button>
       </div>
+    </div>
 
-      <!-- Toast Notifications -->
-      <div class="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none">
-        <TransitionGroup name="toast">
-          <div
-            v-for="toast in store.toastQueue"
-            :key="toast.id"
-            class="px-4 py-2 rounded-lg text-sm font-medium shadow-lg border pointer-events-auto"
-            :class="toastClass(toast.type)"
-          >
-            {{ toast.message }}
-          </div>
-        </TransitionGroup>
-      </div>
+    <!-- Toast Notifications -->
+    <div class="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 pointer-events-none w-[90%] max-w-sm">
+      <TransitionGroup name="toast">
+        <div
+          v-for="toast in store.toastQueue"
+          :key="toast.id"
+          class="px-4 py-3 rounded-xl text-sm font-medium shadow-lg border pointer-events-auto flex items-center gap-2"
+          :class="toastClass(toast.type)"
+        >
+          <span>{{ toastIcon(toast.type) }}</span>
+          <span>{{ toast.message }}</span>
+        </div>
+      </TransitionGroup>
     </div>
   </div>
 </template>
@@ -81,6 +74,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useGameStore } from '../stores/gameStore.js'
+
 import TitleScreen from '../components/TitleScreen.vue'
 import StatusBar from '../components/StatusBar.vue'
 import BottomNav from '../components/BottomNav.vue'
@@ -103,7 +97,7 @@ async function init() {
   try {
     await store.init()
   } catch (e) {
-    console.error('Game init failed:', e)
+    console.error('Game init error:', e)
     initError.value = '存档加载出错，请刷新页面或重置存档。'
   } finally {
     loading.value = false
@@ -118,12 +112,28 @@ onMounted(() => {
   init()
 })
 
+// Toast styling
 function toastClass(type) {
   switch (type) {
-    case 'success': return 'bg-[var(--success)]/90 text-white border-white/10'
-    case 'danger': return 'bg-[var(--danger)]/90 text-white border-white/10'
-    case 'warning': return 'bg-yellow-500/90 text-black border-white/10'
-    default: return 'bg-[var(--info)]/90 text-white border-white/10'
+    case 'success':
+      return 'bg-[rgba(46,204,113,0.9)] text-white border-white/10'
+    case 'danger':
+      return 'bg-[rgba(231,76,60,0.9)] text-white border-white/10'
+    case 'warning':
+      return 'bg-[rgba(243,156,18,0.9)] text-black border-white/10'
+    case 'info':
+    default:
+      return 'bg-[rgba(52,152,219,0.9)] text-white border-white/10'
+  }
+}
+
+function toastIcon(type) {
+  switch (type) {
+    case 'success': return '✅'
+    case 'danger': return '❌'
+    case 'warning': return '⚠️'
+    case 'info': return 'ℹ️'
+    default: return '🔔'
   }
 }
 </script>

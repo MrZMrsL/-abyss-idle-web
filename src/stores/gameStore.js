@@ -114,6 +114,14 @@ export const useGameStore = defineStore('game', () => {
     return result
   }
 
+  function generateMonsterPreview(floor, isBoss) {
+    try {
+      return engine.value?.generateMonster(floor, isBoss) || null
+    } catch (e) {
+      return null
+    }
+  }
+
   function equipItem(itemId) {
     const msg = engine.value.equipItem(itemId)
     lastReport.value = msg
@@ -317,6 +325,7 @@ export const useGameStore = defineStore('game', () => {
     doOnline,
     doRush,
     doFight,
+    generateMonsterPreview,
     equipItem,
     sellItem,
     sellAll,
