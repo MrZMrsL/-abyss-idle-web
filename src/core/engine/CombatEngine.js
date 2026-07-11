@@ -6,7 +6,7 @@ import { MONSTER_TEMPLATES, BOSS_TEMPLATES } from '../../data/monsters.js'
 import { GEM_TYPES, GEM_SOCKETS, getGemName, calcGemValue } from '../../data/gems.js'
 import { PET_TEMPLATES } from '../../data/pets.js'
 import { SHOP_ITEMS, MAX_ENCHANTS } from '../../data/shop.js'
-import { randomInt, weightedRandom, calcItemPrice, calcItemScore, randomId } from '../utils/helpers.js'
+import { randomInt, weightedRandom, calcItemPrice, calcItemScore, randomId, nowISO } from '../utils/helpers.js'
 import {
   MAX_BATTLE_ROUNDS, BOSS_STAGE_INTERVAL,
   DAMAGE_PER_STR, DAMAGE_PER_LEVEL, ARMOR_PER_VIT, ARMOR_PER_LEVEL,

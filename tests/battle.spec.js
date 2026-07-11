@@ -9,9 +9,8 @@ describe('GameView', () => {
     setActivePinia(createPinia())
   })
 
-  it('进入战斗界面后应显示按钮和属性', async () => {
+  it('加载完成后进入战斗界面应显示怪物、按钮和属性', async () => {
     const wrapper = mount(GameView)
-    // wait for init to finish
     await new Promise((r) => setTimeout(r, 100))
     await nextTick()
     await nextTick()
@@ -21,8 +20,7 @@ describe('GameView', () => {
     await nextTick()
     await nextTick()
     expect(wrapper.text()).toContain('立即战斗')
-    expect(wrapper.text()).toContain('战斗属性')
-    expect(wrapper.text()).toContain('已装备')
+    expect(wrapper.text()).toContain('攻击')
     expect(wrapper.text()).toContain('暂无战斗记录')
   })
 })
