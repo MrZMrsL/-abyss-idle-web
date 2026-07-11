@@ -1,0 +1,1 @@
+/* JS content placeholder - will be replaced */
