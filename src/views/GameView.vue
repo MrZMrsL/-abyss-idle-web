@@ -1,6 +1,15 @@
 <template>
+  <!-- Loading State -->
+  <div v-if="loading" class="h-full w-full flex flex-col items-center justify-center gap-4">
+    <div class="text-6xl animate-pulse">🏰</div>
+    <div class="text-lg text-[var(--accent)] font-bold">正在进入深渊...</div>
+    <div class="w-48 h-2 bg-white/10 rounded-full overflow-hidden">
+      <div class="h-full bg-[var(--accent)] rounded-full animate-pulse" style="width: 60%"></div>
+    </div>
+  </div>
+
   <!-- Title Screen -->
-  <div v-if="!started" class="h-full w-full">
+  <div v-else-if="!started" class="h-full w-full">
     <TitleScreen @start="started = true" />
   </div>
 
@@ -55,7 +64,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useGameStore } from '../stores/gameStore.js'
 
 import TitleScreen from '../components/TitleScreen.vue'
@@ -71,9 +80,18 @@ import SettingsPanel from '../components/SettingsPanel.vue'
 
 const store = useGameStore()
 const started = ref(false)
+const loading = ref(true)
 
-// Initialize game
-store.init()
+// Initialize game with proper async handling
+onMounted(async () => {
+  try {
+    await store.init()
+  } catch (e) {
+    console.error('Game init error:', e)
+  } finally {
+    loading.value = false
+  }
+})
 
 // Toast styling
 function toastClass(type) {
